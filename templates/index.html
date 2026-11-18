@@ -1,256 +1,875 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phishing Email Detection System</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <meta name="theme-color" content="#101b3f">
+    <title>PhishGuard | AI Email Security</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #4263eb;
+            --navy: #101b3f;
+            --ink: #17213d;
+            --muted: #68738d;
+            --bg: #f4f6fc;
+            --line: #e7eaf3;
+            --shadow: 0 18px 50px rgba(29,43,91,.09);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at 8% 12%, rgba(66,99,235,.08), transparent 25rem),
+                radial-gradient(circle at 94% 28%, rgba(20,184,166,.07), transparent 24rem),
+                var(--bg);
+            font-family: Inter, system-ui, sans-serif;
+        }
+
+        /* NAVBAR */
+        .site-nav {
+            background: var(--navy);
+            box-shadow: 0 8px 28px rgba(13,23,55,.14);
+        }
+
+        .navbar { min-height: 70px; }
+
+        .navbar-brand {
+            color: white !important;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-mark {
+            width: 40px;
+            height: 40px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: linear-gradient(135deg,#6381ff,#3c5be0);
+        }
+
+        .navbar-nav { gap: 8px; }
+
+        .navbar-nav .nav-link {
+            color: rgba(255,255,255,.75);
+            border-radius: 9px;
+            padding: 10px 14px !important;
+            transition: .2s;
+        }
+
+        .navbar-nav .nav-link:hover,
+        .navbar-nav .nav-link.active {
+            color: white;
+            background: rgba(255,255,255,.12);
+        }
+
+        /* MAIN */
+        .page-wrap {
+            max-width: 1160px;
+            padding-top: 52px;
+            padding-bottom: 25px;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border: 1px solid #dfe6ff;
+            border-radius: 30px;
+            color: #3855c8;
+            background: #edf1ff;
+            font-size: .78rem;
+            font-weight: 700;
+            letter-spacing: .07em;
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            margin: 18px 0 12px;
+            color: var(--navy);
+            font-size: clamp(2rem,4.2vw,3.4rem);
+            line-height: 1.15;
+            letter-spacing: -1.8px;
+            font-weight: 800;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(90deg,#4263eb,#16a6a0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            max-width: 650px;
+            margin: auto;
+            color: var(--muted);
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        /* STATISTICS */
+        .stats-grid { margin-bottom: 28px; }
+
+        .stat-card {
+            height: 100%;
+            min-height: 112px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: white;
+            border: 1px solid var(--line);
+            border-radius: 17px;
+            box-shadow: 0 7px 24px rgba(29,43,91,.045);
+            transition: .25s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+        }
+
+        .stat-icon {
+            flex: 0 0 48px;
+            width: 48px;
+            height: 48px;
+            display: grid;
+            place-items: center;
+            border-radius: 14px;
+            font-size: 1.2rem;
+        }
+
+        .blue { color:#4263eb; background:#edf1ff; }
+        .red { color:#e34d62; background:#fff0f2; }
+        .green { color:#15966e; background:#e8f8f1; }
+        .amber { color:#c78312; background:#fff6df; }
+
+        .stat-number {
+            display: block;
+            color: var(--navy);
+            font-size: 1.65rem;
+            font-weight: 800;
+            line-height: 1.1;
+        }
+
+        .stat-label {
+            display: block;
+            color: var(--muted);
+            margin-top: 5px;
+            font-size: .82rem;
+        }
+
+        /* ANALYSIS FORM */
+        .analysis-card {
+            max-width: 850px;
+            margin: auto;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            background: white;
+            box-shadow: var(--shadow);
+        }
+
+        .analysis-heading {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 22px 27px;
+            color: white;
+            background: linear-gradient(110deg,#2948c7,#5275f5);
+        }
+
+        .heading-icon {
+            width: 44px;
+            height: 44px;
+            display: grid;
+            place-items: center;
+            border-radius: 13px;
+            background: rgba(255,255,255,.17);
+            font-size: 1.1rem;
+        }
+
+        .analysis-heading h2 {
+            margin: 0;
+            font-size: 1.15rem;
+            font-weight: 750;
+        }
+
+        .analysis-heading p {
+            margin: 4px 0 0;
+            color: rgba(255,255,255,.8);
+            font-size: .83rem;
+        }
+
+        .analysis-body { padding: 27px; }
+
+        .form-label {
+            color: var(--ink);
+            font-weight: 700;
+            font-size: .93rem;
+        }
+
+        .form-control {
+            border: 1px solid #dfe4ef;
+            border-radius: 12px;
+            color: var(--ink);
+            background: #fbfcff;
+            box-shadow: none;
+            transition: .2s;
+        }
+
+        .form-control:focus {
+            border-color: #7890ff;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(66,99,235,.11);
+        }
+
+        #emailText {
+            min-height: 220px;
+            padding: 15px;
+            line-height: 1.65;
+            resize: vertical;
+        }
+
+        #emailText::placeholder { color: #9aa3b7; }
+
+        .form-tools {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .form-text {
+            color: #8992a7;
+            font-size: .79rem;
+        }
+
+        .btn-clear {
+            padding: 0;
+            border: none;
+            color: #77819a;
+            background: transparent;
+            font-size: .82rem;
+        }
+
+        .btn-clear:hover { color: var(--primary); }
+
+        .analyze-btn {
+            width: 100%;
+            min-height: 54px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            background: linear-gradient(100deg,#4263eb,#3152d5);
+            box-shadow: 0 8px 18px rgba(66,99,235,.23);
+            font-weight: 750;
+            transition: .2s;
+        }
+
+        .analyze-btn:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(66,99,235,.3);
+        }
+
+        .analyze-btn:disabled {
+            opacity: .7;
+            transform: none;
+        }
+
+        .privacy-note {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 7px;
+            margin: 14px 0 0;
+            color: #8992a7;
+            font-size: .78rem;
+        }
+
+        /* LOADING AND RESULTS */
+        #loadingSection .loading-panel {
+            max-width: 850px;
+            margin: 22px auto 0;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            background: white;
+        }
+
+        .spinner-border {
+            width: 2rem;
+            height: 2rem;
+        }
+
+        #resultCard {
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        #resultCard .card-header { padding: 18px 22px; }
+        #resultCard .card-body { padding: 25px; }
+
+        #resultCard h5 {
+            color: var(--navy);
+            font-weight: 750;
+            margin-bottom: 14px;
+        }
+
+        #ensembleResult { border-radius: 13px; }
+        #confidenceBar { transition: width .4s ease; }
+
+        /* FEATURES */
+        .features-section { padding-top: 62px; }
+
+        .section-kicker {
+            color: var(--primary);
+            font-size: .76rem;
+            font-weight: 800;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .section-title {
+            margin: 8px 0 28px;
+            color: var(--navy);
+            font-size: 1.8rem;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .feature-card {
+            height: 100%;
+            padding: 28px 22px;
+            border: 1px solid var(--line);
+            border-radius: 17px;
+            background: white;
+            text-align: center;
+            transition: .25s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+
+        .feature-icon {
+            width: 58px;
+            height: 58px;
+            margin: 0 auto 17px;
+            display: grid;
+            place-items: center;
+            border-radius: 17px;
+            font-size: 1.45rem;
+        }
+
+        .purple { color:#5268e8; background:#edf0ff; }
+        .teal { color:#139c91; background:#e6f8f5; }
+        .gold { color:#d18a19; background:#fff5df; }
+
+        .feature-card h3 {
+            margin-bottom: 9px;
+            color: var(--navy);
+            font-size: 1.02rem;
+            font-weight: 750;
+        }
+
+        .feature-card p {
+            margin: 0;
+            color: var(--muted);
+            font-size: .88rem;
+            line-height: 1.65;
+        }
+
+        /* FOOTER */
+        .site-footer {
+            margin-top: 65px;
+            padding: 28px 0;
+            color: rgba(255,255,255,.72);
+            background: var(--navy);
+            text-align: center;
+            font-size: .84rem;
+        }
+
+        .site-footer strong { color: white; }
+
+        @media(max-width:767px) {
+            .page-wrap { padding-top: 35px; }
+            .hero { margin-bottom: 27px; }
+            .analysis-heading { padding: 19px; }
+            .analysis-body { padding: 20px; }
+            #emailText { min-height: 190px; }
+            .features-section { padding-top: 45px; }
+            .navbar-nav { padding: 10px 0; }
+            .form-tools { align-items: flex-start; }
+        }
+    </style>
 </head>
+
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url_for('index') }}">
-                <i class="fas fa-shield-alt me-2"></i>
-                Phishing Email Detection
-            </a>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark site-nav">
+    <div class="container">
+
+        <a class="navbar-brand" href="{{ url_for('index') }}">
+            <span class="brand-mark">
+                <i class="fa-solid fa-shield-halved"></i>
+            </span>
+            <span>
+                PhishGuard
+                <small class="d-block fw-normal opacity-75"
+                       style="font-size:.65rem;letter-spacing:.08em;">
+                    EMAIL SECURITY
+                </small>
+            </span>
+        </a>
+
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#mainNavigation"
+                aria-controls="mainNavigation"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNavigation">
             <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="{{ url_for('index') }}">
-                    <i class="fas fa-home me-1"></i>Home
+
+                <a class="nav-link active" href="{{ url_for('index') }}">
+                    <i class="fa-solid fa-house me-2"></i>Home
                 </a>
+
                 <a class="nav-link" href="{{ url_for('upload_file') }}">
-                    <i class="fas fa-upload me-1"></i>Upload File
+                    <i class="fa-solid fa-cloud-arrow-up me-2"></i>Upload File
                 </a>
+
                 <a class="nav-link" href="{{ url_for('dashboard') }}">
-                    <i class="fas fa-chart-line me-1"></i>Dashboard
+                    <i class="fa-solid fa-chart-pie me-2"></i>Dashboard
                 </a>
-            </div>
-        </div>
-    </nav>
 
-    <div class="container mt-4">
-        <!-- Header Section -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="text-center">
-                    <h1 class="display-4 text-primary">
-                        <i class="fas fa-shield-alt me-3"></i>
-                        AI-Powered Phishing Email Detection
-                    </h1>
-                    <p class="lead text-muted">
-                        Protect yourself from phishing attacks with advanced machine learning technology
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Statistics Cards -->
-        {% if stats %}
-        <div class="row mb-4">
-            <div class="col-md-3 mb-3">
-                <div class="card bg-info text-white">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-envelope fa-2x me-3"></i>
-                            <div>
-                                <h5 class="card-title mb-0">{{ stats.total_predictions or 0 }}</h5>
-                                <small>Total Analyzed</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card bg-danger text-white">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
-                            <div>
-                                <h5 class="card-title mb-0">{{ stats.phishing_detected or 0 }}</h5>
-                                <small>Phishing Detected</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card bg-success text-white">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-check-circle fa-2x me-3"></i>
-                            <div>
-                                <h5 class="card-title mb-0">{{ stats.legitimate_emails or 0 }}</h5>
-                                <small>Legitimate Emails</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card bg-warning text-white">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-percentage fa-2x me-3"></i>
-                            <div>
-                                <h5 class="card-title mb-0">{{ "%.1f"|format(stats.phishing_rate or 0) }}%</h5>
-                                <small>Phishing Rate</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- Main Analysis Form -->
-        <div class="row">
-            <div class="col-lg-8 mx-auto">
-                <div class="card shadow">
-                    <div class="card-header bg-primary text-white">
-                        <h4 class="mb-0">
-                            <i class="fas fa-search me-2"></i>
-                            Analyze Email Content
-                        </h4>
-                    </div>
-                    <div class="card-body">
-                        <form id="emailAnalysisForm">
-                            <div class="mb-3">
-                                <label for="emailText" class="form-label">
-                                    <strong>Email Content</strong>
-                                </label>
-                                <textarea 
-                                    class="form-control" 
-                                    id="emailText" 
-                                    name="email_text" 
-                                    rows="10" 
-                                    placeholder="Paste your email content here (including headers, subject, and body)..."
-                                    required
-                                ></textarea>
-                                <div class="form-text">
-                                    Paste the complete email content including headers, subject line, and message body.
-                                </div>
-                            </div>
-                            
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary btn-lg" id="analyzeBtn">
-                                    <i class="fas fa-search me-2"></i>
-                                    Analyze Email
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Loading Spinner -->
-        <div class="row mt-4" id="loadingSection" style="display: none;">
-            <div class="col-12 text-center">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <p class="mt-2">Analyzing email content...</p>
-            </div>
-        </div>
-
-        <!-- Results Section -->
-        <div class="row mt-4" id="resultsSection" style="display: none;">
-            <div class="col-12">
-                <div class="card shadow" id="resultCard">
-                    <div class="card-header" id="resultHeader">
-                        <h4 class="mb-0" id="resultTitle"></h4>
-                    </div>
-                    <div class="card-body">
-                        <!-- Ensemble Prediction -->
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <h5>Overall Prediction</h5>
-                                <div class="alert" id="ensembleResult">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-8">
-                                            <h6 class="mb-1" id="ensembleLabel"></h6>
-                                            <p class="mb-0" id="ensembleDetails"></p>
-                                        </div>
-                                        <div class="col-md-4 text-end">
-                                            <div class="progress" style="height: 25px;">
-                                                <div class="progress-bar" id="confidenceBar"></div>
-                                            </div>
-                                            <small id="confidenceText"></small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Individual Model Predictions -->
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <h5>Individual Model Predictions</h5>
-                                <div id="individualPredictions"></div>
-                            </div>
-                        </div>
-
-                        <!-- Email Analysis -->
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h5>Email Statistics</h5>
-                                <div id="emailStats"></div>
-                            </div>
-                            <div class="col-md-6">
-                                <h5>Suspicious Indicators</h5>
-                                <div id="suspiciousIndicators"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Feature Information -->
-        <div class="row mt-5">
-            <div class="col-12">
-                <h3 class="text-center mb-4">How It Works</h3>
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <div class="card h-100">
-                            <div class="card-body text-center">
-                                <i class="fas fa-brain fa-3x text-primary mb-3"></i>
-                                <h5>Machine Learning</h5>
-                                <p>Uses Random Forest and SVM algorithms trained on thousands of phishing and legitimate emails.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card h-100">
-                            <div class="card-body text-center">
-                                <i class="fas fa-language fa-3x text-success mb-3"></i>
-                                <h5>NLP Processing</h5>
-                                <p>Advanced natural language processing techniques analyze email content and extract meaningful features.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card h-100">
-                            <div class="card-body text-center">
-                                <i class="fas fa-shield-alt fa-3x text-warning mb-3"></i>
-                                <h5>Real-time Protection</h5>
-                                <p>Get instant results with over 95% accuracy to protect against phishing attacks.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
+</nav>
 
-    <footer class="bg-dark text-white mt-5 py-4">
-        <div class="container text-center">
-            <p>&copy; 2024 AI-Powered Phishing Email Detection System. Built with Python, Flask, and Machine Learning.</p>
+
+<main class="container page-wrap">
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+
+        <div class="eyebrow">
+            <i class="fa-solid fa-lock"></i>
+            Smarter Email Security
         </div>
-    </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+        <h1>
+            Stop phishing before<br class="d-sm-none">
+            it <span>reaches you.</span>
+        </h1>
+
+        <p>
+            Analyze suspicious emails with machine learning and
+            natural language processing. Get a clear risk
+            assessment in seconds.
+        </p>
+
+    </section>
+
+
+    <!-- STATISTICS -->
+    {% if stats %}
+    <section class="row g-3 stats-grid">
+
+        <div class="col-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon blue">
+                    <i class="fa-solid fa-envelope"></i>
+                </div>
+                <div>
+                    <span class="stat-number">
+                        {{ stats.total_predictions or 0 }}
+                    </span>
+                    <span class="stat-label">Total Analyzed</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon red">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div>
+                    <span class="stat-number">
+                        {{ stats.phishing_detected or 0 }}
+                    </span>
+                    <span class="stat-label">Phishing Detected</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon green">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div>
+                    <span class="stat-number">
+                        {{ stats.legitimate_emails or 0 }}
+                    </span>
+                    <span class="stat-label">Legitimate Emails</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon amber">
+                    <i class="fa-solid fa-percent"></i>
+                </div>
+                <div>
+                    <span class="stat-number">
+                        {{ "%.1f"|format(stats.phishing_rate or 0) }}%
+                    </span>
+                    <span class="stat-label">Phishing Rate</span>
+                </div>
+            </div>
+        </div>
+
+    </section>
+    {% endif %}
+
+
+    <!-- EMAIL ANALYSIS FORM -->
+    <section class="analysis-card">
+
+        <div class="analysis-heading">
+
+            <div class="heading-icon">
+                <i class="fa-solid fa-magnifying-glass-chart"></i>
+            </div>
+
+            <div>
+                <h2>Analyze an Email</h2>
+                <p>Paste the email below to check for phishing indicators</p>
+            </div>
+
+        </div>
+
+        <div class="analysis-body">
+
+            <form id="emailAnalysisForm">
+
+                <div class="mb-2">
+
+                    <label for="emailText" class="form-label">
+                        Email Content
+                    </label>
+
+                    <textarea
+                        class="form-control"
+                        id="emailText"
+                        name="email_text"
+                        placeholder="Paste the complete email here — sender, subject, links and message body..."
+                        required
+                    ></textarea>
+
+                    <div class="form-tools">
+
+                        <div class="form-text">
+                            <i class="fa-regular fa-circle-question me-1"></i>
+                            Include subject and sender details for a more complete analysis.
+                        </div>
+
+                        <button type="button"
+                                class="btn-clear"
+                                id="clearEmailBtn">
+                            <i class="fa-solid fa-eraser me-1"></i>
+                            Clear
+                        </button>
+
+                    </div>
+                </div>
+
+                <button type="submit"
+                        class="btn analyze-btn"
+                        id="analyzeBtn">
+
+                    <i class="fa-solid fa-shield-halved me-2"></i>
+                    Analyze Email
+                    <i class="fa-solid fa-arrow-right ms-2"></i>
+
+                </button>
+
+                <p class="privacy-note">
+                    <i class="fa-solid fa-lock"></i>
+                    Always verify suspicious messages carefully.
+                </p>
+
+            </form>
+
+        </div>
+    </section>
+
+
+    <!-- LOADING SECTION -->
+    <section class="row mt-4"
+             id="loadingSection"
+             style="display:none;">
+
+        <div class="col-12">
+
+            <div class="loading-panel">
+
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+
+                <p class="mb-0 mt-3 fw-semibold">
+                    Analyzing email content...
+                </p>
+
+                <small class="text-muted">
+                    Checking content for suspicious patterns
+                </small>
+
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- RESULTS SECTION -->
+    <section class="row mt-4"
+             id="resultsSection"
+             style="display:none;">
+
+        <div class="col-12">
+
+            <div class="card shadow-sm" id="resultCard">
+
+                <div class="card-header" id="resultHeader">
+                    <h4 class="mb-0" id="resultTitle"></h4>
+                </div>
+
+                <div class="card-body">
+
+                    <!-- OVERALL PREDICTION -->
+                    <div class="row mb-4">
+
+                        <div class="col-12">
+
+                            <h5>Overall Prediction</h5>
+
+                            <div class="alert" id="ensembleResult">
+
+                                <div class="row align-items-center">
+
+                                    <div class="col-md-8">
+                                        <h6 class="mb-1" id="ensembleLabel"></h6>
+                                        <p class="mb-0" id="ensembleDetails"></p>
+                                    </div>
+
+                                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+
+                                        <div class="progress" style="height:25px;">
+                                            <div class="progress-bar"
+                                                 id="confidenceBar">
+                                            </div>
+                                        </div>
+
+                                        <small id="confidenceText"></small>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- MODEL PREDICTIONS -->
+                    <div class="row mb-4">
+
+                        <div class="col-12">
+
+                            <h5>Individual Model Predictions</h5>
+
+                            <div id="individualPredictions"></div>
+
+                        </div>
+                    </div>
+
+
+                    <!-- EMAIL DETAILS -->
+                    <div class="row g-4">
+
+                        <div class="col-md-6">
+
+                            <h5>Email Statistics</h5>
+
+                            <div id="emailStats"></div>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <h5>Suspicious Indicators</h5>
+
+                            <div id="suspiciousIndicators"></div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- HOW IT WORKS -->
+    <section class="features-section">
+
+        <div class="section-kicker">Under The Hood</div>
+
+        <h2 class="section-title">
+            How PhishGuard Works
+        </h2>
+
+        <div class="row g-3">
+
+            <div class="col-md-4">
+
+                <article class="feature-card">
+
+                    <div class="feature-icon purple">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+
+                    <h3>Machine Learning</h3>
+
+                    <p>
+                        Uses trained classification models such as
+                        Random Forest and SVM to identify patterns
+                        associated with phishing and legitimate emails.
+                    </p>
+
+                </article>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <article class="feature-card">
+
+                    <div class="feature-icon teal">
+                        <i class="fa-solid fa-language"></i>
+                    </div>
+
+                    <h3>NLP Processing</h3>
+
+                    <p>
+                        Examines email language and extracts meaningful
+                        text features that can help reveal suspicious messages.
+                    </p>
+
+                </article>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <article class="feature-card">
+
+                    <div class="feature-icon gold">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+
+                    <h3>Clear Risk Insights</h3>
+
+                    <p>
+                        Combines model output and suspicious indicators
+                        to help you make a more informed decision
+                        about an email.
+                    </p>
+
+                </article>
+
+            </div>
+
+        </div>
+    </section>
+
+</main>
+
+
+<!-- FOOTER -->
+<footer class="site-footer">
+
+    <div class="container">
+
+        <div class="mb-2">
+            <i class="fa-solid fa-shield-halved me-2"></i>
+            <strong>PhishGuard</strong>
+            · AI-Powered Phishing Email Detection
+        </div>
+
+        <div>
+            Built with Python, Flask and Machine Learning
+            · Lakshmi Prajapati
+        </div>
+
+    </div>
+
+</footer>
+
+
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+<script>
+    // Clear email textarea
+    document.getElementById('clearEmailBtn')?.addEventListener('click', function () {
+
+        const field = document.getElementById('emailText');
+
+        field.value = '';
+        field.focus();
+
+    });
+</script>
+
 </body>
 </html>

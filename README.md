@@ -1,264 +1,186 @@
-# AI-Powered Phishing Email Detection System
 
-A comprehensive machine learning-based system for detecting phishing emails using Natural Language Processing (NLP) techniques, Random Forest, and Support Vector Machine (SVM) classifiers with a user-friendly Flask web interface.
+# Phishing Email Detection System
 
-## 🎯 Project Overview
+A machine learning-based web application that detects phishing emails and distinguishes them from legitimate emails using email content analysis and classification models.
 
-This project implements an advanced phishing email detection system that achieves over 95% accuracy by analyzing email text, URLs, and sender details using state-of-the-art machine learning techniques.
+## About the Project
 
-### Key Features
+Phishing emails are commonly used to trick users into sharing sensitive information such as passwords, banking details, and personal data.
 
-- **Machine Learning Models**: Random Forest and SVM classifiers with ensemble prediction
-- **NLP Processing**: Advanced text preprocessing, TF-IDF vectorization, and feature extraction
-- **Web Interface**: User-friendly Flask application for real-time email analysis
-- **File Upload Support**: Analyze emails from uploaded files (.txt, .eml, .msg)
-- **Database Integration**: MySQL database for storing predictions and analytics
-- **Dashboard**: Comprehensive analytics and model performance monitoring
-- **REST API**: Programmatic access to prediction capabilities
+This project aims to identify potentially malicious emails by analyzing their textual content, extracting relevant features, and applying machine learning algorithms to classify them.
 
-## 🚀 Quick Start
+The application provides an easy-to-use interface where users can submit email content and view the prediction along with suspicious indicators.
 
-### Prerequisites
+## Features
 
-- Python 3.8 or higher
-- MySQL 5.7 or higher
-- pip package manager
+- Email classification as Phishing or Legitimate.
+- Machine learning-based prediction using Random Forest and Support Vector Machine (SVM).
+- TF-IDF-based text feature extraction.
+- Detection of suspicious keywords and URLs.
+- Email statistics and risk score analysis.
+- Individual model predictions and combined prediction.
+- Email file upload and analysis.
+- Analytics dashboard for viewing prediction statistics.
+- MySQL database integration for storing email and prediction records.
 
-### Installation
+## Technologies Used
 
-1. **Clone the repository**
+**Programming Language**
+- Python
+
+**Backend**
+- Flask
+
+**Frontend**
+- HTML
+- CSS
+- JavaScript
+- Bootstrap
+
+**Machine Learning**
+- Scikit-learn
+- Pandas
+- NumPy
+- TF-IDF Vectorizer
+- Random Forest
+- Support Vector Machine (SVM)
+
+**Database**
+- MySQL
+
+## Project Structure
+
+```text
+phishing-email-detection/
+│
+├── app.py
+├── config.py
+├── train_model.py
+├── requirements.txt
+│
+├── database/
+│   └── create_tables.sql
+│
+├── data/
+│   └── models/
+│
+├── src/
+│   ├── prediction.py
+│   └── database.py
+│
+├── static/
+│   ├── css/
+│   └── js/
+│
+├── templates/
+│   ├── index.html
+│   ├── dashboard.html
+│   ├── upload.html
+│   └── result.html
+│
+├── uploads/
+│
+└── README.md
+```
+
+## Installation and Setup
+
+### 1. Clone the Repository
+
 ```bash
 git clone <repository-url>
 cd phishing-email-detection
 ```
 
-2. **Install dependencies**
+### 2. Create a Virtual Environment
+
+```bash
+python -m venv .venv
+```
+
+Activate it on Windows:
+
+```bash
+.venv\Scripts\activate
+```
+
+### 3. Install Dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
-3. **Setup MySQL database**
-```bash
-mysql -u root -p < database/create_tables.sql
-```
+### 4. Configure Environment Variables
 
-4. **Configure environment variables**
-Create a `.env` file:
+Create a `.env` file in the project root directory.
+
+Add your MySQL database configuration:
+
 ```env
-SECRET_KEY=your-secret-key-here
 DB_HOST=localhost
-DB_USER=your-db-user
-DB_PASSWORD=your-db-password
+DB_USER=root
+DB_PASSWORD=your_mysql_password
 DB_NAME=phishing_detection
 ```
 
-5. **Train the models**
-```bash
-python train_model.py
+### 5. Setup the Database
+
+Create the database and tables using the SQL script:
+
+```sql
+CREATE DATABASE phishing_detection;
 ```
 
-6. **Run the application**
+Execute the SQL commands in:
+
+```text
+database/create_tables.sql
+```
+
+### 6. Run the Application
+
 ```bash
 python app.py
 ```
 
-7. **Access the web interface**
-Open your browser and navigate to `http://localhost:5000`
+Open your browser and visit:
 
-## 📁 Project Structure
-
-```
-phishing-email-detection/
-├── app.py                      # Flask web application
-├── config.py                   # Configuration settings
-├── train_model.py             # Model training script
-├── requirements.txt           # Python dependencies
-├── README.md                  # Project documentation
-├── src/                       # Source code modules
-│   ├── __init__.py
-│   ├── data_preprocessing.py  # Email preprocessing
-│   ├── feature_extraction.py # Feature engineering
-│   ├── model_training.py     # ML model training
-│   ├── prediction.py         # Prediction engine
-│   ├── database.py           # Database operations
-│   └── email_analyzer.py     # Email analysis utilities
-├── templates/                 # HTML templates
-│   ├── index.html            # Main interface
-│   ├── result.html           # Results page
-│   ├── upload.html           # File upload page
-│   └── dashboard.html        # Analytics dashboard
-├── static/                   # Static assets
-│   ├── css/
-│   │   └── style.css        # Styling
-│   └── js/
-│       └── script.js        # JavaScript functionality
-├── database/                 # Database files
-│   ├── create_tables.sql    # Database schema
-│   └── sample_data.sql      # Sample data
-├── data/                    # Data directories
-│   ├── raw/                 # Raw datasets
-│   ├── processed/           # Processed data
-│   └── models/             # Trained models
-└── tests/                   # Test files
-    ├── test_models.py
-    └── test_preprocessing.py
+```text
+http://127.0.0.1:5000
 ```
 
-## 🔧 Technical Implementation
+## How It Works
 
-### Machine Learning Pipeline
+1. The user enters email content or uploads an email file.
+2. The application preprocesses the email text.
+3. TF-IDF vectorization converts text into numerical features.
+4. Machine learning models analyze the extracted features.
+5. The system generates phishing or legitimate predictions.
+6. Suspicious indicators and email statistics are displayed.
+7. Email and prediction records are stored in the MySQL database.
 
-1. **Data Preprocessing**
-   - Email parsing and content extraction
-   - Text cleaning and normalization
-   - Tokenization and stopword removal
-   - Stemming/Lemmatization
+## Machine Learning Models
 
-2. **Feature Extraction**
-   - TF-IDF vectorization (5000 features)
-   - Email metadata features
-   - URL analysis and suspicious pattern detection
-   - Keyword-based features
+| Model | Purpose |
+|---|---|
+| Random Forest | Email classification |
+| Support Vector Machine | Email classification |
+| TF-IDF | Text feature extraction |
 
-3. **Model Training**
-   - Random Forest Classifier (100 estimators)
-   - Support Vector Machine (RBF kernel)
-   - Hyperparameter tuning with Grid Search
-   - Cross-validation for model evaluation
+## Future Improvements
 
-4. **Ensemble Prediction**
-   - Majority voting from individual models
-   - Confidence scoring
-   - Risk assessment
+- Explainable AI for understanding prediction results.
+- Advanced URL and domain reputation analysis.
+- Email sender authentication checks.
+- Improved phishing threat intelligence.
+- Real-time threat monitoring.
+- Enhanced analytics and visualization.
 
-### Key Technologies
+## Disclaimer
 
-- **Backend**: Python, Flask, SQLAlchemy
-- **Machine Learning**: Scikit-learn, NLTK, Pandas, NumPy
-- **Database**: MySQL
-- **Frontend**: HTML5, Bootstrap 5, JavaScript
-- **Data Processing**: BeautifulSoup, Regular Expressions
-
-## 📊 Model Performance
-
-The system achieves the following performance metrics:
-
-| Model | Accuracy | Precision | Recall | F1-Score |
-|-------|----------|-----------|--------|----------|
-| Random Forest | 96.5% | 95.2% | 97.8% | 96.5% |
-| SVM | 94.8% | 93.1% | 96.5% | 94.8% |
-| Ensemble | 97.2% | 96.0% | 98.1% | 97.0% |
-
-## 🌟 Features in Detail
-
-### Email Analysis
-- **Content Analysis**: Deep text analysis using NLP techniques
-- **URL Detection**: Identification and analysis of embedded URLs
-- **Sender Verification**: Analysis of sender patterns and authenticity
-- **Risk Scoring**: Comprehensive risk assessment (0-100 scale)
-
-### Web Interface
-- **Real-time Analysis**: Instant email classification
-- **File Upload**: Support for multiple email formats
-- **Interactive Dashboard**: Visual analytics and statistics
-- **Responsive Design**: Mobile-friendly interface
-
-### API Endpoints
-- `POST /analyze` - Analyze email content
-- `GET /api/stats` - Get prediction statistics
-- `GET /api/health` - System health check
-
-## 🔍 Usage Examples
-
-### Web Interface
-1. Navigate to the main page
-2. Paste email content in the text area
-3. Click "Analyze Email"
-4. View detailed results and risk assessment
-
-### File Upload
-1. Go to the Upload page
-2. Select an email file (.txt, .eml, .msg)
-3. Upload and get instant analysis
-
-### API Usage
-```python
-import requests
-
-# Analyze email via API
-response = requests.post('http://localhost:5000/analyze', 
-                        data={'email_text': email_content})
-result = response.json()
-print(f"Prediction: {result['prediction']['label']}")
-```
-
-## 📈 Database Schema
-
-The system uses MySQL with the following main tables:
-- `emails` - Store email content and metadata
-- `predictions` - Store model predictions and confidence scores
-- `user_activity` - Track user interactions
-- `model_metrics` - Store model performance data
-
-## 🧪 Testing
-
-Run the test suite:
-```bash
-python -m pytest tests/
-```
-
-## 🔐 Security Considerations
-
-- Input validation and sanitization
-- SQL injection prevention
-- File upload restrictions
-- Session management
-- Error handling without information disclosure
-
-## 📚 Dependencies
-
-### Core Libraries
-- Flask 2.3.3 - Web framework
-- scikit-learn 1.3.0 - Machine learning
-- pandas 2.0.3 - Data manipulation
-- NLTK 3.8.1 - Natural language processing
-- MySQL-connector-python 8.1.0 - Database connectivity
-
-### Full dependency list available in `requirements.txt`
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Submit a pull request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- **Datasets**: Various open-source phishing email datasets
-- **Research**: Based on current phishing detection research
-- **Libraries**: Thanks to the open-source community for excellent tools
-
-## 📞 Support
-
-For questions or issues:
-1. Check the documentation
-2. Review existing issues
-3. Create a new issue with detailed information
-
-## 🔮 Future Enhancements
-
-- Deep learning models (LSTM, BERT)
-- Real-time email monitoring
-- Browser extension integration
-- Multi-language support
-- Advanced threat intelligence integration
+This project is developed for educational and research purposes. Predictions are based on machine learning models and should not be considered a guarantee that an email is safe or malicious.
 
 ---
 
-**Built with ❤️ for cybersecurity and email protection**
+**Project:** Phishing Email Detection System  
+**Domain:** Machine Learning | Cybersecurity

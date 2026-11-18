@@ -1,10 +1,17 @@
-﻿# Python
+﻿
+# ==============================
+# Python
+# ==============================
 __pycache__/
-*.pyc
 *.py[cod]
 *.class
 *.so
 .Python
+*.egg
+*.egg-info/
+.installed.cfg
+
+# Build files
 build/
 develop-eggs/
 dist/
@@ -17,46 +24,87 @@ parts/
 sdist/
 var/
 wheels/
-*.egg-info/
-.installed.cfg
-*.egg
 
-# Virtual Environment
+# ==============================
+# Virtual Environments
+# ==============================
+.venv/
 venv/
 env/
 ENV/
 
-# IDE
+# ==============================
+# IDE / Editors
+# ==============================
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# OS
+# ==============================
+# Operating System
+# ==============================
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Project specific
+# ==============================
+# Environment Variables / Secrets
+# ==============================
+.env
+.env.*
+!.env.example
+config_local.py
+
+# ==============================
+# Model Files
+# ==============================
 models/*.pkl
 models/*.joblib
-*.log
+
+
+# ==============================
+# Dataset / Raw Data
+# ==============================
 data/raw/*
 !data/raw/.gitkeep
 
-# Environment variables
-.env
-config_local.py
-
+# ==============================
 # Database
+# ==============================
 *.db
+*.sqlite
 *.sqlite3
 
-# Temporary files
+# ==============================
+# Logs
+# ==============================
+*.log
+logs/
+
+# ==============================
+# Uploaded Files
+# ==============================
+uploads/*
+!uploads/.gitkeep
+
+# ==============================
+# Temporary Files
+# ==============================
 temp/
 tmp/
 *.tmp
+*.bak
 
+# ==============================
+# Jupyter Notebook
+# ==============================
+.ipynb_checkpoints/
 
-
-
+# ==============================
+# Testing / Coverage
+# ==============================
+.pytest_cache/
+.coverage
+htmlcov/
